@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 const Employee = () => {
   const [employee, setEmployee] = useState([]);
@@ -8,7 +9,7 @@ const Employee = () => {
     axios.get('http://localhost:3001/auth/employee')
       .then(result => {
         if (result.data.Status) {
-          setCategory(result.data.Result)
+          setEmployee(result.data.Result)
         } else {
           alert(result.data.Error)
         }
@@ -30,17 +31,24 @@ const Employee = () => {
               <th>Email</th>
               <th>Address</th>
               <th>Salary</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
             {
               employee.map(emp => (
-                <tr key={emp.id}>
+                <tr>
                   <td>{emp.name}</td>
-                  <td><img src={`http://localhost:3001/Images/` +emp.image} alt="" /></td>
+                  <td>
+                    <img src={`http://localhost:3001/Images/`+emp.image} alt="" className='employee_image' />
+                  </td>
                   <td>{emp.email}</td>
                   <td>{emp.address}</td>
-                  <td>{emp.salary}</td>
+                  <td>R {emp.salary}</td>
+                  <td>
+                    <Link to={`/dashboard/edit_employee/`+emp.id} className='btn btn-info btn-sm me-2'>Edit</Link>
+                    <button className='btn btn-warning btn-sm'>Delete</button>
+                  </td>
                 </tr>
               ))
             }
