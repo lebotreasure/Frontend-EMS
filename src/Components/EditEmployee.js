@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const EditEmployee = () => {
-    const {id} = useParams();
+    const { id } = useParams();
     const [category, setCategory] = useState([]);
     const [employee, setEmployee] = useState({
         name: '',
@@ -12,35 +13,49 @@ const EditEmployee = () => {
         address: '',
         category_id: ''
     });
+    const navigate = useNavigate();
 
     useEffect(() => {
         axios.get('http://localhost:3001/auth/category')
             .then(result => {
                 if (result.data.Status) {
-                    setCategory(result.data.Result)
+                    setCategory(result.data.Result);
                 } else {
                     alert(result.data.Error)
                 }
-            }).catch(err => console.log(err))
+            }).catch(err => console.log(err));
 
-        axios.get('http://localhost:3001/auth/employee/'+id)
+        axios.get('http://localhost:3001/auth/employee/' + id)
             .then(result => {
                 setEmployee({
                     ...employee,
                     name: result.data.Result[0].name,
                     email: result.data.Result[0].email,
                     address: result.data.Result[0].address,
-                    salary: result.data.Result[0].salary
+                    salary: result.data.Result[0].salary,
+                    category_id: result.data.Result[0].category_id,
                 })
-            }).catch(err => console.log(err))
+            }).catch(err => console.log(err));
     }, []);
+
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        axios.put('http://localhost:3001/auth/edit_employee/'+id, employee)
+        .then(result => {
+            if(result.data.Status) {
+                navigate('/dashboard/employee')
+            } else {
+                alert(result.data.Error)
+            }
+        }).catch(err => console.log(err));
+    }
 
 
     return (
         <div className="d-flex justify-content-center align-items-center mt-3">
             <div className="p-3 rounded w-50 border">
                 <h3 className="text-center">Edit Employee</h3>
-                <form className="row g-1">
+                <form className="row g-1" onSubmit={handleSubmit}>
                     <div className="col-12">
                         <label htmlFor="inputName" className="form-label">
                             Name
@@ -51,7 +66,9 @@ const EditEmployee = () => {
                             id="inputName"
                             placeholder="Enter Name"
                             value={employee.name}
-                            onChange={(e) => setEmployee({ ...employee, name: e.target.value })}
+                            onChange={(e) =>
+                                setEmployee({ ...employee, name: e.target.value })
+                            }
                         />
                     </div>
                     <div className="col-12">
@@ -65,7 +82,9 @@ const EditEmployee = () => {
                             placeholder="Enter Email"
                             autoComplete="off"
                             value={employee.email}
-                            onChange={(e) => setEmployee({ ...employee, email: e.target.value })}
+                            onChange={(e) =>
+                                setEmployee({ ...employee, email: e.target.value })
+                            }
                         />
                     </div>
                     <div className="col-12">
@@ -79,7 +98,9 @@ const EditEmployee = () => {
                             placeholder="Enter Salary"
                             autoComplete="off"
                             value={employee.salary}
-                            onChange={(e) => setEmployee({ ...employee, salary: e.target.value })}
+                            onChange={(e) =>
+                                setEmployee({ ...employee, salary: e.target.value })
+                            }
                         />
                     </div>
                     <div className="col-12">
@@ -93,7 +114,9 @@ const EditEmployee = () => {
                             placeholder="1234 Main St"
                             autoComplete="off"
                             value={employee.address}
-                            onChange={(e) => setEmployee({ ...employee, address: e.target.value })}
+                            onChange={(e) =>
+                                setEmployee({ ...employee, address: e.target.value })
+                            }
                         />
                     </div>
                     <div className="col-12">
@@ -104,7 +127,7 @@ const EditEmployee = () => {
                             onChange={(e) => setEmployee({ ...employee, category_id: e.target.value })}>
                             {
                                 category.map(c => {
-                                    return <option key={c.id} value={c.id}>{c.name}</option>
+                                    return <option value={c.id}>{c.name}</option>
                                 })
                             }
                         </select>

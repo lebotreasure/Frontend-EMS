@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const Employee = () => {
   const [employee, setEmployee] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios.get('http://localhost:3001/auth/employee')
@@ -15,6 +17,17 @@ const Employee = () => {
         }
       }).catch(err => console.log(err))
   }, [])
+
+  const handleDelete = (id) => {
+    axios.delete('http://localhost:3001/auth/delete_employee/'+id)
+    .then(result => {
+      if(result.data.Status) {
+        window.location.reload()
+      } else {
+        alert(result.data.Error)
+      }
+    }).catch(err => console.log(err))
+  }
 
   return (
     <div className='px-5 mt-3'>
@@ -40,14 +53,14 @@ const Employee = () => {
                 <tr>
                   <td>{emp.name}</td>
                   <td>
-                    <img src={`http://localhost:3001/Images/`+emp.image} alt="" className='employee_image' />
+                    <img src={`http://localhost:3001/Images/` + emp.image} alt="" className='employee_image' />
                   </td>
                   <td>{emp.email}</td>
                   <td>{emp.address}</td>
                   <td>R {emp.salary}</td>
                   <td>
-                    <Link to={`/dashboard/edit_employee/`+emp.id} className='btn btn-info btn-sm me-2'>Edit</Link>
-                    <button className='btn btn-warning btn-sm'>Delete</button>
+                    <Link to={`/dashboard/edit_employee/` + emp.id} className='btn btn-info btn-sm me-2'>Edit</Link>
+                    <button className='btn btn-warning btn-sm' onClick={() => handleDelete(emp.id)}>Delete</button>
                   </td>
                 </tr>
               ))
