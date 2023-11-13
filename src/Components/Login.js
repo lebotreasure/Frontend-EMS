@@ -20,7 +20,8 @@ const Login = () => {
         axios.post('http://localhost:3001/auth/adminlogin', values)
             .then(result => {
                 if (result.data.loginStatus) {
-                    navigate('/dashboard')
+                    localStorage.setItem("valid", true);
+                    navigate('/dashboard');
                 } else {
                     setError(result.data.Error)
                 }
